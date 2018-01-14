@@ -1,6 +1,7 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import java.util.Date;
 
 import java.io.IOException;
 
@@ -20,11 +21,12 @@ public class Controller {
     public Client client;
     public Thread clientThread;
 
+    public double connectionTime = 0;
+
     @FXML
     public void initialize(){
         textLog.setEditable(false);
         client = new Client(this);
-
     }
 
     public  void writeToLog(String s){
@@ -32,9 +34,11 @@ public class Controller {
     }
 
     public void buttonConnectionToServer(ActionEvent actionEvent) {
+        Date date = new Date();
         if (!client.isConnection){
             try {
-                if (client.findServer()) {
+                if (client.findServer()) { //Если нашли сервер и подключились
+                    connectionTime = date.getTime(); //Время в секундах начала подключения
                     textPort.setDisable(true);
                     textHost.setDisable(true);
                     clientThread = new Thread(client,"clientThread");
@@ -48,7 +52,8 @@ public class Controller {
             }
         }
         else{
-            writeToLog("\n===Вы успешно отключились от сервера!===\n\n");
+            connectionTime = (date.getTime() - connectionTime) / 1000; //Время соедниения в секундах
+            writeToLog("\n===Вы успешно отключились от сервера!===\nВремя сессии: " + connectionTime + " сек\n");
             textPort.setDisable(false);
             textHost.setDisable(false);
             buttonConnect.setText("Подключиться");
