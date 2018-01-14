@@ -1,12 +1,7 @@
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
 
 public class Server implements Runnable{
     private ServerSocket serverSocket;
@@ -46,6 +41,7 @@ public class Server implements Runnable{
             else
                 out.writeUTF("test");
 
+            DataSafer.writeToTextLog(socket,"===Соединение сервер-клиент установлено===");
             while (true) {
                 String inputInfo = in.readUTF();
                 Thread.sleep(500);
@@ -92,6 +88,11 @@ public class Server implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {//Если прервано соединение
+            DataSafer.writeToTextLog(socket,"===Соединение сервер-клиент прервано===");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
