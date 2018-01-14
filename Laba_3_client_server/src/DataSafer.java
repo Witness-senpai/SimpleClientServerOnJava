@@ -4,9 +4,20 @@ import java.util.Date;
 
 public class DataSafer {
 
+    private static double connectionTime = 0;
+    
     public static void writeToTextLog(Socket socket,String action) throws IOException {
         Date date = new Date();
-        String strOut = "[" + String.valueOf(date.toInstant()) + "]:"+ socket.getInetAddress() + ":" + socket.getPort() + " => " + action;
+        String strOut = " ";
+        if (action.equals("===Соединение сервер-клиент установлено==="))
+            connectionTime = date.getTime(); //Время подлючения в секундах UNIX-времени
+        else if (action.equals("===Соединение сервер-клиент прервано===")) {
+            connectionTime = (date.getTime() - connectionTime) / (double) 1000; //Время подключения в секундах
+            strOut = "[" + String.valueOf(date.toInstant()) + "]:"+ socket.getInetAddress() + ":" + socket.getPort() + " => " +
+                    action + "[Время подключения: " + connectionTime + " сек]";
+        }
+        else
+            strOut = "[" + String.valueOf(date.toInstant()) + "]:"+ socket.getInetAddress() + ":" + socket.getPort() + " => " + action;
         FileWriter writer = new FileWriter("serverLog.txt", true);
         try {
             writer.write(strOut);
